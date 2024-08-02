@@ -72,6 +72,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Home() {
+  //set variable to search for inventory items
+  const [findItem, setFindItem] = useState("");
+
   // set variable for storing inventory
   const [inventory, setInventory] = useState([]);
 
@@ -182,7 +185,9 @@ export default function Home() {
         alignItems="center"
         gap={2}
       >
-        <Typography variant="h1">NIBBLE NOTE</Typography>
+        <Typography variant="h1" padding={5}>
+          NIBBLE NOTE
+        </Typography>
 
         <Modal open={open} onClose={handleClose}>
           {/* center box on screen */}
