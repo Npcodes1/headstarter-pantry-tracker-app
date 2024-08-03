@@ -137,10 +137,9 @@ export default function Home() {
       //update document with the new fields
       const { quantity } = docSnap.data();
       await setDoc(docRef, { item, quantity: editQuantity }, { merge: true });
-      alert("Iteme updated succesfully");
-      setDoc(docRef, { item, quantity: editQuantity });
+      alert("Item updated successfully");
     } else {
-      await setDoc(docRef, { quantity });
+      await setDoc(docRef, { item, quantity });
     }
     await updateInventory();
   };
