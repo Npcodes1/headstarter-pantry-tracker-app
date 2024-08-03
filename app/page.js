@@ -20,6 +20,7 @@ import {
   faPlus,
   faMinus,
   faPenToSquare,
+  faTrashCan,
 } from "@fortawesome/free-solid-svg-icons";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -90,8 +91,14 @@ export default function Home() {
   //set variable for the item name- default value is an empty string so it's empty when a item name is captured.
   const [itemName, setItemName] = useState("");
 
-  //set variable for updating the name or price field.
-  const [editQuantity, setEditQuantity] = useState("");
+  //set variable for the item quantity- default value is an 0.
+  const [quantity, setQuantity] = useState(0);
+
+  //set variable for updating the name
+  const [editItemName, setEditItem] = useState("");
+
+  //set variable for updating the quantity
+  const [editQuantity, setEditQuantity] = useState();
 
   //set variable for updating inventory from firebase (want to make this async because firebase will block code while fetching
   const updateInventory = async () => {
@@ -129,23 +136,32 @@ export default function Home() {
   };
 
   //to edit items
-  const editItem = async (item, newQuantity) => {
-    const docRef = doc(collection(firestore, "inventory"), item);
-    const docSnap = await getDoc(docRef);
+  // const editItem = async (item, quantity) => {
+  //   const docRef = doc(collection(firestore, "inventory"), item);
 
-    if (docSnap.exists()) {
-      //update document with the new fields
-      const { quantity } = docSnap.data();
-      await setDoc(docRef, { item, quantity: editQuantity }, { merge: true });
-      alert("Item updated successfully");
-    } else {
-      await setDoc(docRef, { item, quantity });
-    }
-    await updateInventory();
-  };
+  //   try {
+  //     const docSnap = await getDoc(docRef);
 
-  //To remove items
-  const removeItem = async (item) => {
+  //     if (docSnap.exists()) {
+  //       //update document with the new fields
+  //       // const { item, quantity } = docSnap.data();
+  //       await setDoc(
+  //         docRef,
+  //         { item: editItemName, quantity: editQuantity },
+  //         { merge: true }
+  //       );
+  //       alert("Item updated successfully");
+  //     } else {
+  //       await setDoc(docRef, { quantity });
+  //     }
+  //     await updateInventory();
+  //   } catch (error) {
+  //     console.error("There was an error editing item: ", error);
+  //   }
+  // };
+
+  //To remove item quantity
+  const removeItemQuantity = async (item) => {
     const docRef = doc(collection(firestore, "inventory"), item);
     const docSnap = await getDoc(docRef);
 
@@ -159,6 +175,28 @@ export default function Home() {
       }
     }
     await updateInventory();
+  };
+
+  //to remove item
+  const removeOverallItem = async (item) => {
+    const docRef = doc(collection(firestore, "inventory"), item);
+
+    try {
+      //fetch the current document
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        //delete document
+        await deleteDoc(docRef);
+        alert("Item successfully deleted.");
+      } else {
+        alert("Item does not exist.");
+      }
+
+      await updateInventory();
+    } catch (error) {
+      console.error("Error deleting item: ", error);
+    }
   };
 
   //useEffect -run codes and updates whenever something in the dependency array changes. Leave empty to update when the page loads
@@ -204,7 +242,7 @@ export default function Home() {
         </Typography>
         <Typography variant="h6" width="40vw" padding={5} textAlign="center">
           An Inventory Management System designed to help efficiently track and
-          manage food/pantry inventories
+          manage pantry items
         </Typography>
 
         <Modal open={open} onClose={handleClose}>
@@ -304,36 +342,59 @@ export default function Home() {
                   bgcolor="#f0f0f0"
                   padding={5}
                 >
-                  <Typography variant="h3" color="#333" textAlign="center">
-                    {name.charAt(0).toUpperCase() + name.slice(1)}
-                  </Typography>
-                  <Typography variant="h3" color="#333" textAlign="center">
-                    {quantity}
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      addItem(name);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faPlus} />
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      editItem(name);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faPenToSquare} />
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      removeItem(name);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faMinus} />
-                  </Button>
+                  <Box flexBasis="50%">
+                    <Typography variant="h3" color="#333" textAlign="center">
+                      {name.charAt(0).toUpperCase() + name.slice(1)}
+                    </Typography>
+                  </Box>
+                  <Box flexBasis="50%">
+                    <Typography variant="h3" color="#333" textAlign="center">
+                      {quantity}
+                    </Typography>
+                  </Box>
+
+                  <Box display="flex">
+                    <Box paddingRight={3}>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          addItem(name);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faPlus} />
+                      </Button>
+                    </Box>
+                    <Box paddingRight={3}>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          editItem(name, quantity);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faPenToSquare} />
+                      </Button>
+                    </Box>
+                    <Box paddingRight={3}>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          removeItemQuantity(name);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faMinus} />
+                      </Button>
+                    </Box>
+                    <Box>
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          removeOverallItem(name);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faTrashCan} />
+                      </Button>
+                    </Box>
+                  </Box>
                 </Box>
               ))}
           </Stack>
