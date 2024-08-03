@@ -90,6 +90,9 @@ export default function Home() {
   //set variable for the item name- default value is an empty string so it's empty when a item name is captured.
   const [itemName, setItemName] = useState("");
 
+  //set variable for updating the name or price field.
+  const [editQuantity, setEditQuantity] = useState("");
+
   //set variable for updating inventory from firebase (want to make this async because firebase will block code while fetching
   const updateInventory = async () => {
     //Get the snapshot of the collection by getting a query
@@ -133,9 +136,9 @@ export default function Home() {
     if (docSnap.exists()) {
       //update document with the new fields
       const { quantity } = docSnap.data();
-      await setDoc(docRef, { item, quantity: newQuantity }, { merge: true });
+      await setDoc(docRef, { item, quantity: editQuantity }, { merge: true });
       alert("Iteme updated succesfully");
-      setDoc(docRef, { item, quantity: newQuantity });
+      setDoc(docRef, { item, quantity: editQuantity });
     } else {
       await setDoc(docRef, { quantity });
     }
