@@ -15,7 +15,12 @@ import {
   InputBase,
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
-import MenuIcon from "@mui/icons-material/Menu";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faMinus,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
 import SearchIcon from "@mui/icons-material/Search";
 
 import {
@@ -28,6 +33,24 @@ import {
   setDoc,
 } from "firebase/firestore";
 
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: "inherit",
+  width: "100%",
+  "& .MuiInputBase-input": {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create("width"),
+    [theme.breakpoints.up("sm")]: {
+      width: "12ch",
+      "&:focus": {
+        width: "20ch",
+      },
+    },
+  },
+}));
+
+//Search feature
 //Search Icon
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -52,23 +75,6 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  width: "100%",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    [theme.breakpoints.up("sm")]: {
-      width: "12ch",
-      "&:focus": {
-        width: "20ch",
-      },
-    },
-  },
 }));
 
 export default function Home() {
@@ -119,6 +125,23 @@ export default function Home() {
     await updateInventory();
   };
 
+  //to edit items
+  const editItem = async (item, newQuantity) => {
+    const docRef = doc(collection(firestore, "inventory"), item);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      //update document with the new fields
+      const { quantity } = docSnap.data();
+      await setDoc(docRef, { item, quantity: newQuantity }, { merge: true });
+      alert("Iteme updated succesfully");
+      setDoc(docRef, { item, quantity: newQuantity });
+    } else {
+      await setDoc(docRef, { quantity });
+    }
+    await updateInventory();
+  };
+
   //To remove items
   const removeItem = async (item) => {
     const docRef = doc(collection(firestore, "inventory"), item);
@@ -146,34 +169,23 @@ export default function Home() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Toolbar>
-          {/* <IconButton
+          <IconButton
             size="large"
             edge="start"
             color="inherit"
             aria-label="open drawer"
             sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton> */}
+          ></IconButton>
           <Typography
-            variant="h6"
+            variant="h5"
             noWrap
             component="div"
             sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
-            NIBBLE NOTE
+            StockSnap
           </Typography>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
         </Toolbar>
       </AppBar>
       <Box
@@ -185,8 +197,12 @@ export default function Home() {
         alignItems="center"
         gap={2}
       >
-        <Typography variant="h1" padding={5}>
-          NIBBLE NOTE
+        <Typography variant="h1" paddingTop={5}>
+          StockSnap
+        </Typography>
+        <Typography variant="h6" width="40vw" padding={5} textAlign="center">
+          An Inventory Management System designed to help efficiently track and
+          manage food/pantry inventories
         </Typography>
 
         <Modal open={open} onClose={handleClose}>
@@ -219,6 +235,7 @@ export default function Home() {
                   setItemName(e.target.value);
                 }}
               />
+
               <Button
                 variant="outlined"
                 onClick={() => {
@@ -232,63 +249,91 @@ export default function Home() {
             </Stack>
           </Box>
         </Modal>
-        <Button
-          variant="contained"
-          onClick={() => {
-            handleOpen();
-          }}
-        >
-          Add New Item
-        </Button>
+
         <Box border="1px solid #333">
           <Box
             width="800px"
-            height="100px"
+            height="150px"
             bgcolor="#ADD8E6"
             display="flex"
+            flexDirection="column"
             alignItems="center"
             justifyContent="center"
+            padding={10}
           >
-            <Typography variant="h2" color="#333">
+            <Typography variant="h2" color="#333" paddingBottom={3}>
               Inventory Items{" "}
             </Typography>
+            <Button
+              variant="contained"
+              onClick={() => {
+                handleOpen();
+              }}
+            >
+              Add New Item
+            </Button>
+          </Box>
+          <Box>
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+                value={findItem}
+                onChange={(e) => setFindItem(e.target.value)}
+              />
+            </Search>
           </Box>
           <Stack width="800px" height="300px" spacing={2} overflow="auto">
-            {inventory.map(({ name, quantity }) => (
-              <Box
-                key={name}
-                width="100%"
-                minHeight="150px"
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                bgcolor="#f0f0f0"
-                padding={5}
-              >
-                <Typography variant="h3" color="#333" textAlign="center">
-                  {name.charAt(0).toUpperCase() + name.slice(1)}
-                </Typography>
-                <Typography variant="h3" color="#333" textAlign="center">
-                  {quantity}
-                </Typography>
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    addItem(name);
-                  }}
+            {inventory
+              .filter((item) =>
+                item.name.toLowerCase().includes(findItem.toLowerCase())
+              )
+              .map(({ name, quantity }) => (
+                <Box
+                  key={name}
+                  width="100%"
+                  minHeight="150px"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  bgcolor="#f0f0f0"
+                  padding={5}
                 >
-                  Add
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    removeItem(name);
-                  }}
-                >
-                  Remove
-                </Button>
-              </Box>
-            ))}
+                  <Typography variant="h3" color="#333" textAlign="center">
+                    {name.charAt(0).toUpperCase() + name.slice(1)}
+                  </Typography>
+                  <Typography variant="h3" color="#333" textAlign="center">
+                    {quantity}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      addItem(name);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      editItem(name);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faPenToSquare} />
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      removeItem(name);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faMinus} />
+                  </Button>
+                </Box>
+              ))}
           </Stack>
         </Box>
       </Box>
