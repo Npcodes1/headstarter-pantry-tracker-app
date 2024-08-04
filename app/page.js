@@ -145,8 +145,8 @@ export default function Home() {
   };
 
   //To add 1 to item
-  const addItem = async (itemName) => {
-    const docRef = doc(collection(firestore, "inventory"), itemName);
+  const addItem = async (name) => {
+    const docRef = doc(collection(firestore, "inventory"), name);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -222,8 +222,15 @@ export default function Home() {
     updateInventory();
   }, []);
 
+  //Function to handle opening the model
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+
+  //Function to handle closing the model
+  const handleClose = () => {
+    setItemName("");
+    setItemQuantity("");
+    setOpen(false);
+  };
 
   const handleEditClick = (name, quantity) => {
     setItemName(name);
@@ -238,7 +245,7 @@ export default function Home() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed">
+      <AppBar position="fixed" sx={{ backgroundColor: "#008080" }}>
         <Toolbar>
           <IconButton
             size="large"
@@ -251,7 +258,11 @@ export default function Home() {
             variant="h5"
             noWrap
             component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", sm: "block" },
+              color: "#ECDEC9",
+            }}
           >
             StockSnap
           </Typography>
@@ -265,94 +276,132 @@ export default function Home() {
         justifyContent="center"
         alignItems="center"
         gap={2}
+        sx={{
+          backgroundColor: "#008080",
+        }}
       >
-        <Typography variant="h1" paddingTop={5}>
-          StockSnap
-        </Typography>
-        <Typography variant="h6" width="40vw" padding={5} textAlign="center">
-          An Inventory Management System designed to help efficiently capture
-          and track pantry items
-        </Typography>
-
-        <Modal open={open} onClose={handleClose}>
-          {/* center box on screen */}
+        <Box
+          sx={{
+            width: "100vw",
+            height: "100vh",
+            backgroundImage: `url(https://cdn.pixabay.com/photo/2023/10/05/11/20/jar-8295653_1280.jpg)`,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 2,
+          }}
+        >
           <Box
-            position="absolute"
-            top="50%"
-            left="50%"
-            width={400}
-            bgcolor="white"
-            border="2px solid #000"
-            boxShadow={24}
-            p={4}
-            display="flex"
-            flexDirection="column"
-            gap={3}
             sx={{
-              transform: "translate(-50%, -50%)",
+              backgroundColor: "#ECDEC9",
+              textAlign: "center",
+              color: "#008080",
             }}
           >
-            <Typography variant="h6">Add Item</Typography>
+            <Typography variant="h1" paddingTop={5}>
+              StockSnap
+            </Typography>
+            <Typography
+              variant="h6"
+              width="40vw"
+              padding={3}
+              textAlign="center"
+            >
+              An Inventory Management System designed to help efficiently
+              capture and track pantry items
+            </Typography>
 
-            {/* To display the box in stacking form */}
-            <Stack width="100%" direction="row" spacing={2}>
-              <TextField
-                variant="outlined"
-                placeholder="Item Name..."
-                fullWidth
-                value={itemName}
-                onChange={(e) => {
-                  setItemName(e.target.value);
-                }}
-              />
-
-              <TextField
-                variant="outlined"
-                placeholder="Quantity..."
-                fullWidth
-                value={itemQuantity}
-                onChange={(e) => {
-                  setItemQuantity(e.target.value);
-                }}
-              />
-
-              <Button
-                variant="outlined"
+            <Modal open={open} onClose={handleClose}>
+              {/* center box on screen */}
+              <Box
+                position="absolute"
+                top="50%"
+                left="50%"
+                width={400}
+                bgcolor="#fff"
+                border="2px solid #000"
+                boxShadow={24}
+                p={4}
+                display="flex"
+                flexDirection="column"
+                gap={3}
                 sx={{
-                  backgroundColor: "#333",
-                  color: "#fff",
-                  "&:hover": {
-                    backgroundColor: "#fff",
-                    color: "#333",
-                  },
-                }}
-                onClick={() => {
-                  addNewItem(itemName, itemQuantity);
-                  setItemName(itemName);
-                  handleClose();
+                  transform: "translate(-50%, -50%)",
                 }}
               >
-                Add
-              </Button>
-            </Stack>
+                <Typography variant="h6">Add Item</Typography>
+
+                {/* To display the box in stacking form */}
+                <Stack width="100%" direction="row" spacing={2}>
+                  <TextField
+                    variant="outlined"
+                    placeholder="Item Name..."
+                    fullWidth
+                    value={itemName}
+                    onChange={(e) => {
+                      setItemName(e.target.value);
+                    }}
+                  />
+
+                  <TextField
+                    variant="outlined"
+                    placeholder="Quantity..."
+                    fullWidth
+                    value={itemQuantity}
+                    onChange={(e) => {
+                      setItemQuantity(e.target.value);
+                    }}
+                  />
+
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      backgroundColor: "#008080",
+                      color: "#ECDEC9",
+                      "&:hover": {
+                        backgroundColor: "#ECDEC9",
+                        color: "#008080",
+                      },
+                    }}
+                    onClick={() => {
+                      addNewItem(itemName, itemQuantity);
+                      setItemName("");
+                      setItemQuantity("");
+                      handleClose();
+                    }}
+                  >
+                    Add
+                  </Button>
+                </Stack>
+              </Box>
+            </Modal>
           </Box>
-        </Modal>
+        </Box>
 
         <Box border="1px solid #333">
           <Box
             width="800px"
             height="150px"
-            bgcolor="#ADD8E6"
             display="flex"
             flexDirection="column"
             alignItems="center"
             justifyContent="center"
             padding={10}
+            sx={{ backgroundColor: "#ECDEC9", color: "#008080" }}
           >
-            <Typography variant="h2" color="#333" paddingBottom={3}>
+            <Typography variant="h2" color="#008080" paddingBottom={3}>
               Inventory Items{" "}
             </Typography>
             <Button
+              sx={{
+                backgroundColor: "#008080",
+                color: "#ECDEC9",
+                "&:hover": {
+                  backgroundColor: "#ECDEC9",
+                  color: "#008080",
+                },
+              }}
               variant="contained"
               onClick={() => {
                 handleOpen();
@@ -361,7 +410,18 @@ export default function Home() {
               Add New Item
             </Button>
           </Box>
-          <Box>
+          <Box
+            sx={{
+              backgroundColor: "#f0f0f0",
+              borderTop: "2px solid #000",
+              borderBottom: "2px solid #000",
+              color: "#008080",
+              "&:hover": {
+                backgroundColor: "008080",
+                color: "#ECDEC9",
+              },
+            }}
+          >
             <Search>
               <SearchIconWrapper>
                 <SearchIcon />
@@ -374,7 +434,7 @@ export default function Home() {
               />
             </Search>
           </Box>
-          <Stack width="800px" height="300px" spacing={2} overflow="auto">
+          <Stack width="800px" height="300px" overflow="auto">
             {inventory
               .filter((item) =>
                 item.name.toLowerCase().includes(findItem.toLowerCase())
@@ -404,6 +464,14 @@ export default function Home() {
                   <Box display="flex">
                     <Box paddingRight={3}>
                       <Button
+                        sx={{
+                          backgroundColor: "#008080",
+                          color: "#ECDEC9",
+                          "&:hover": {
+                            backgroundColor: "#ECDEC9",
+                            color: "#008080",
+                          },
+                        }}
                         variant="contained"
                         onClick={() => {
                           addItem(name);
@@ -414,6 +482,14 @@ export default function Home() {
                     </Box>
                     <Box paddingRight={3}>
                       <Button
+                        sx={{
+                          backgroundColor: "#008080",
+                          color: "#ECDEC9",
+                          "&:hover": {
+                            backgroundColor: "#ECDEC9",
+                            color: "#008080",
+                          },
+                        }}
                         variant="contained"
                         onClick={() => {
                           handleEditClick(itemName, itemQuantity);
@@ -424,6 +500,14 @@ export default function Home() {
                     </Box>
                     <Box paddingRight={3}>
                       <Button
+                        sx={{
+                          backgroundColor: "#008080",
+                          color: "#ECDEC9",
+                          "&:hover": {
+                            backgroundColor: "#ECDEC9",
+                            color: "#008080",
+                          },
+                        }}
                         variant="contained"
                         onClick={() => {
                           removeItemQuantity(name);
@@ -434,6 +518,14 @@ export default function Home() {
                     </Box>
                     <Box>
                       <Button
+                        sx={{
+                          backgroundColor: "#008080",
+                          color: "#ECDEC9",
+                          "&:hover": {
+                            backgroundColor: "#ECDEC9",
+                            color: "#008080",
+                          },
+                        }}
                         variant="contained"
                         onClick={() => {
                           removeOverallItem(name);
