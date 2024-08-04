@@ -13,6 +13,10 @@ import {
   Toolbar,
   IconButton,
   InputBase,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -94,11 +98,8 @@ export default function Home() {
   //set variable for the item quantity- default value is an 0.
   const [itemQuantity, setItemQuantity] = useState();
 
-  //set variable for updating the name
-  const [editItemName, setEditItem] = useState("");
-
-  //set variable for updating the quantity
-  const [editQuantity, setEditQuantity] = useState();
+  //set variable to edit pantry items
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   //set variable for updating inventory from firebase (want to make this async because firebase will block code while fetching
   const updateInventory = async () => {
@@ -122,9 +123,9 @@ export default function Home() {
   };
 
   //To add new item
-  const addNewItem = async (itemName, itemQuantity) => {
+  const addNewItem = async (name) => {
     try {
-      const docRef = doc(collection(firestore, "inventory"), itemName);
+      const docRef = doc(collection(firestore, "inventory"), name);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
@@ -144,8 +145,8 @@ export default function Home() {
   };
 
   //To add 1 to item
-  const addItem = async (item) => {
-    const docRef = doc(collection(firestore, "inventory"), item);
+  const addItem = async (itemName) => {
+    const docRef = doc(collection(firestore, "inventory"), itemName);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -158,33 +159,28 @@ export default function Home() {
   };
 
   //to edit items
-  const editItem = async (item, quantity) => {
-    const docRef = doc(collection(firestore, "inventory"), item);
+  const editItem = async (name, quantity) => {
+    const docRef = doc(collection(firestore, "inventory"), name);
 
     try {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        //update document with the new fields
-        // const { item, quantity } = docSnap.data();
-        await setDoc(
-          docRef,
-          { item: editItemName, quantity: editQuantity },
-          { merge: true }
-        );
+        // Update document with the new fields
+        await setDoc(docRef, { quantity }, { merge: true });
+        await updateInventory();
         alert("Item updated successfully");
       } else {
-        await setDoc(docRef, { quantity });
+        console.error("Item does not exist in inventory");
       }
-      await updateInventory();
     } catch (error) {
       console.error("There was an error editing item: ", error);
     }
   };
 
   //To remove item quantity
-  const removeItemQuantity = async (item) => {
-    const docRef = doc(collection(firestore, "inventory"), item);
+  const removeItemQuantity = async (name) => {
+    const docRef = doc(collection(firestore, "inventory"), name);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -228,6 +224,17 @@ export default function Home() {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const handleEditClick = (name, quantity) => {
+    setItemName(name);
+    setItemQuantity(quantity);
+    setEditDialogOpen(true);
+  };
+
+  const handleEditSave = () => {
+    editItem(itemName, itemQuantity);
+    setEditDialogOpen(false);
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -321,7 +328,7 @@ export default function Home() {
                 }}
                 onClick={() => {
                   addNewItem(itemName, itemQuantity);
-                  setItemName("");
+                  setItemName(itemName);
                   handleClose();
                 }}
               >
@@ -409,7 +416,7 @@ export default function Home() {
                       <Button
                         variant="contained"
                         onClick={() => {
-                          editItem(name, quantity);
+                          handleEditClick(itemName, itemQuantity);
                         }}
                       >
                         <FontAwesomeIcon icon={faPenToSquare} />
@@ -435,6 +442,41 @@ export default function Home() {
                         <FontAwesomeIcon icon={faTrashCan} />
                       </Button>
                     </Box>
+                    <Dialog
+                      open={editDialogOpen}
+                      onClose={() => setEditDialogOpen(false)}
+                    >
+                      <DialogTitle>Edit Item</DialogTitle>
+                      <DialogContent>
+                        <TextField
+                          margin="dense"
+                          label="Item Name"
+                          type="text"
+                          fullWidth
+                          value={itemName}
+                          onChange={(e) => setItemName(e.target.value)}
+                        />
+                        <TextField
+                          margin="dense"
+                          label="Item Quantity"
+                          type="number"
+                          fullWidth
+                          value={itemQuantity}
+                          onChange={(e) => setItemQuantity(e.target.value)}
+                        />
+                      </DialogContent>
+                      <DialogActions>
+                        <Button
+                          onClick={() => setEditDialogOpen(false)}
+                          color="primary"
+                        >
+                          Cancel
+                        </Button>
+                        <Button onClick={handleEditSave} color="primary">
+                          Save
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
                   </Box>
                 </Box>
               ))}
