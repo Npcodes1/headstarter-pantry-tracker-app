@@ -1,3 +1,11 @@
+Week Two of Headstarter Software Fellowship
+
+# Goal
+- The goal of this project is to create a inventory management system to track items in a pantry. It used Next.js for front-end, Material UI for styling, and Firebase for the database.
+
+# Future Additions
+- I plan to add a feature that allows you to take pictures of the items to identify and store the item in the tracker.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

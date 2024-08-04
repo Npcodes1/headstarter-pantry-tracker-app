@@ -67,7 +67,7 @@ const Search = styled("div")(({ theme }) => ({
   marginLeft: 0,
   width: "100%",
   [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(1),
+    marginLeft: theme.spacing(0),
     width: "auto",
   },
 }));
@@ -232,9 +232,9 @@ export default function Home() {
     setOpen(false);
   };
 
-  const handleEditClick = (name, quantity) => {
-    setItemName(name);
-    setItemQuantity(quantity);
+  const handleEditClick = (itemName, itemQuantity) => {
+    setItemName(itemName);
+    setItemQuantity(parseInt(itemQuantity));
     setEditDialogOpen(true);
   };
 
@@ -253,7 +253,7 @@ export default function Home() {
             color="inherit"
             aria-label="open drawer"
             sx={{ mr: 2 }}
-          ></IconButton>
+          />
           <Typography
             variant="h5"
             noWrap
@@ -278,6 +278,7 @@ export default function Home() {
         gap={2}
         sx={{
           backgroundColor: "#008080",
+          padding: { xs: 2, sm: 4 },
         }}
       >
         <Box
@@ -285,11 +286,13 @@ export default function Home() {
             width: "100vw",
             height: "100vh",
             backgroundImage: `url(https://cdn.pixabay.com/photo/2023/10/05/11/20/jar-8295653_1280.jpg)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            padding: 2,
+            padding: { xs: 1, sm: 2 },
           }}
         >
           <Box
@@ -297,16 +300,24 @@ export default function Home() {
               backgroundColor: "#ECDEC9",
               textAlign: "center",
               color: "#008080",
+              maxWidth: { xs: "90%", sm: "80%", md: "60%" },
+              padding: { xs: 1, sm: 2 },
             }}
           >
-            <Typography variant="h1" paddingTop={5}>
+            <Typography
+              variant="h3"
+              paddingTop={3}
+              fontSize={{ xs: "2rem", sm: "3rem" }}
+              sx={{ width: "100%", textAlign: "center" }}
+            >
               StockSnap
             </Typography>
             <Typography
-              variant="h6"
-              width="40vw"
-              padding={3}
+              variant="body1"
+              width="100%"
+              padding={2}
               textAlign="center"
+              fontSize={{ xs: "0.9rem", sm: "1rem" }}
             >
               An Inventory Management System designed to help efficiently
               capture and track pantry items
@@ -318,19 +329,24 @@ export default function Home() {
                 position="absolute"
                 top="50%"
                 left="50%"
-                width={400}
+                width={{ xs: "90%", sm: 400 }}
                 bgcolor="#fff"
                 border="2px solid #000"
                 boxShadow={24}
-                p={4}
+                p={3}
                 display="flex"
                 flexDirection="column"
-                gap={3}
+                gap={2}
                 sx={{
                   transform: "translate(-50%, -50%)",
                 }}
               >
-                <Typography variant="h6">Add Item</Typography>
+                <Typography
+                  variant="h6"
+                  fontSize={{ xs: "1rem", sm: "1.25rem" }}
+                >
+                  Add Item
+                </Typography>
 
                 {/* To display the box in stacking form */}
                 <Stack width="100%" direction="row" spacing={2}>
@@ -339,9 +355,8 @@ export default function Home() {
                     placeholder="Item Name..."
                     fullWidth
                     value={itemName}
-                    onChange={(e) => {
-                      setItemName(e.target.value);
-                    }}
+                    onChange={(e) => setItemName(e.target.value)}
+                    size="small"
                   />
 
                   <TextField
@@ -349,9 +364,8 @@ export default function Home() {
                     placeholder="Quantity..."
                     fullWidth
                     value={itemQuantity}
-                    onChange={(e) => {
-                      setItemQuantity(e.target.value);
-                    }}
+                    onChange={(e) => setItemQuantity(e.target.value)}
+                    size="small"
                   />
 
                   <Button
@@ -379,22 +393,37 @@ export default function Home() {
           </Box>
         </Box>
 
-        <Box border="1px solid #333">
+        <Box
+          border="1px solid #333"
+          sx={{
+            width: "100%",
+            maxWidth: 800,
+            margin: "auto",
+            borderRadius: 1,
+          }}
+        >
           <Box
-            width="800px"
+            width="100%"
             height="150px"
             display="flex"
             flexDirection="column"
             alignItems="center"
             justifyContent="center"
-            padding={10}
+            padding={2}
             sx={{ backgroundColor: "#ECDEC9", color: "#008080" }}
           >
-            <Typography variant="h2" color="#008080" paddingBottom={3}>
-              Inventory Items{" "}
+            <Typography
+              variant="h5"
+              color="#008080"
+              paddingBottom={2}
+              fontSize={{ xs: "1.5rem", sm: "2rem" }}
+              textAlign={"center"}
+            >
+              Inventory Items
             </Typography>
             <Button
               sx={{
+                width: "90%",
                 backgroundColor: "#008080",
                 color: "#ECDEC9",
                 "&:hover": {
@@ -403,26 +432,26 @@ export default function Home() {
                 },
               }}
               variant="contained"
-              onClick={() => {
-                handleOpen();
-              }}
+              onClick={() => handleOpen()}
             >
               Add New Item
             </Button>
           </Box>
-          <Box
-            sx={{
-              backgroundColor: "#f0f0f0",
-              borderTop: "2px solid #000",
-              borderBottom: "2px solid #000",
-              color: "#008080",
-              "&:hover": {
-                backgroundColor: "008080",
-                color: "#ECDEC9",
-              },
-            }}
-          >
-            <Search>
+          <Box width="100%" sx={{ padding: 0, margin: 0 }}>
+            <Search
+              sx={{
+                backgroundColor: "#f0f0f0",
+                borderTop: "2px solid #000",
+                borderBottom: "2px solid #000",
+                color: "#008080",
+                padding: 1,
+                width: "100%",
+                "&:hover": {
+                  backgroundColor: "008080",
+                  color: "#ECDEC9",
+                },
+              }}
+            >
               <SearchIconWrapper>
                 <SearchIcon />
               </SearchIconWrapper>
@@ -434,7 +463,14 @@ export default function Home() {
               />
             </Search>
           </Box>
-          <Stack width="800px" height="300px" overflow="auto">
+
+          <Stack
+            width="100%"
+            maxWidth="800px"
+            height="300px"
+            overflow="auto"
+            spacing={2}
+          >
             {inventory
               .filter((item) =>
                 item.name.toLowerCase().includes(findItem.toLowerCase())
@@ -445,23 +481,33 @@ export default function Home() {
                   width="100%"
                   minHeight="150px"
                   display="flex"
+                  flexDirection={{ xs: "column", sm: "row" }}
                   alignItems="center"
                   justifyContent="space-between"
                   bgcolor="#f0f0f0"
-                  padding={5}
+                  padding={2}
+                  borderRadius={1}
                 >
-                  <Box flexBasis="50%">
-                    <Typography variant="h3" color="#333" textAlign="center">
+                  <Box flexBasis="50%" textAlign="center">
+                    <Typography
+                      variant="h6"
+                      color="#333"
+                      fontSize={{ xs: "1.25rem", sm: "1.5rem" }}
+                    >
                       {name.charAt(0).toUpperCase() + name.slice(1)}
                     </Typography>
                   </Box>
                   <Box flexBasis="50%">
-                    <Typography variant="h3" color="#333" textAlign="center">
+                    <Typography
+                      variant="h6"
+                      color="#333"
+                      fontSize={{ xs: "1.25rem", sm: "1.5rem" }}
+                    >
                       {quantity}
                     </Typography>
                   </Box>
 
-                  <Box display="flex">
+                  <Box display="flex" flexDirection="row" gap={1} mt={1}>
                     <Box paddingRight={3}>
                       <Button
                         sx={{
@@ -473,9 +519,7 @@ export default function Home() {
                           },
                         }}
                         variant="contained"
-                        onClick={() => {
-                          addItem(name);
-                        }}
+                        onClick={() => addItem(name)}
                       >
                         <FontAwesomeIcon icon={faPlus} />
                       </Button>
@@ -492,7 +536,7 @@ export default function Home() {
                         }}
                         variant="contained"
                         onClick={() => {
-                          handleEditClick(itemName, itemQuantity);
+                          handleEditClick(name, quantity);
                         }}
                       >
                         <FontAwesomeIcon icon={faPenToSquare} />
