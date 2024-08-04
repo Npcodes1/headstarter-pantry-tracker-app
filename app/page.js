@@ -92,7 +92,7 @@ export default function Home() {
   const [itemName, setItemName] = useState("");
 
   //set variable for the item quantity- default value is an 0.
-  const [quantity, setQuantity] = useState(0);
+  const [itemQuantity, setItemQuantity] = useState();
 
   //set variable for updating the name
   const [editItemName, setEditItem] = useState("");
@@ -121,7 +121,29 @@ export default function Home() {
     // console.log(inventoryList);
   };
 
-  //To add items
+  //To add new item
+  const addNewItem = async (itemName, itemQuantity) => {
+    try {
+      const docRef = doc(collection(firestore, "inventory"), itemName);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const { quantity } = docSnap.data();
+        await setDoc(
+          docRef,
+          { quantity: quantity + parseInt(itemQuantity, 10) },
+          { merge: true }
+        );
+      } else {
+        await setDoc(docRef, { quantity: parseInt(itemQuantity, 10) });
+      }
+      await updateInventory();
+    } catch (error) {
+      console.error("There was an error adding the new item: ", error);
+    }
+  };
+
+  //To add 1 to item
   const addItem = async (item) => {
     const docRef = doc(collection(firestore, "inventory"), item);
     const docSnap = await getDoc(docRef);
@@ -136,29 +158,29 @@ export default function Home() {
   };
 
   //to edit items
-  // const editItem = async (item, quantity) => {
-  //   const docRef = doc(collection(firestore, "inventory"), item);
+  const editItem = async (item, quantity) => {
+    const docRef = doc(collection(firestore, "inventory"), item);
 
-  //   try {
-  //     const docSnap = await getDoc(docRef);
+    try {
+      const docSnap = await getDoc(docRef);
 
-  //     if (docSnap.exists()) {
-  //       //update document with the new fields
-  //       // const { item, quantity } = docSnap.data();
-  //       await setDoc(
-  //         docRef,
-  //         { item: editItemName, quantity: editQuantity },
-  //         { merge: true }
-  //       );
-  //       alert("Item updated successfully");
-  //     } else {
-  //       await setDoc(docRef, { quantity });
-  //     }
-  //     await updateInventory();
-  //   } catch (error) {
-  //     console.error("There was an error editing item: ", error);
-  //   }
-  // };
+      if (docSnap.exists()) {
+        //update document with the new fields
+        // const { item, quantity } = docSnap.data();
+        await setDoc(
+          docRef,
+          { item: editItemName, quantity: editQuantity },
+          { merge: true }
+        );
+        alert("Item updated successfully");
+      } else {
+        await setDoc(docRef, { quantity });
+      }
+      await updateInventory();
+    } catch (error) {
+      console.error("There was an error editing item: ", error);
+    }
+  };
 
   //To remove item quantity
   const removeItemQuantity = async (item) => {
@@ -241,8 +263,8 @@ export default function Home() {
           StockSnap
         </Typography>
         <Typography variant="h6" width="40vw" padding={5} textAlign="center">
-          An Inventory Management System designed to help efficiently track and
-          manage pantry items
+          An Inventory Management System designed to help efficiently capture
+          and track pantry items
         </Typography>
 
         <Modal open={open} onClose={handleClose}>
@@ -269,6 +291,7 @@ export default function Home() {
             <Stack width="100%" direction="row" spacing={2}>
               <TextField
                 variant="outlined"
+                placeholder="Item Name..."
                 fullWidth
                 value={itemName}
                 onChange={(e) => {
@@ -276,10 +299,28 @@ export default function Home() {
                 }}
               />
 
+              <TextField
+                variant="outlined"
+                placeholder="Quantity..."
+                fullWidth
+                value={itemQuantity}
+                onChange={(e) => {
+                  setItemQuantity(e.target.value);
+                }}
+              />
+
               <Button
                 variant="outlined"
+                sx={{
+                  backgroundColor: "#333",
+                  color: "#fff",
+                  "&:hover": {
+                    backgroundColor: "#fff",
+                    color: "#333",
+                  },
+                }}
                 onClick={() => {
-                  addItem(itemName);
+                  addNewItem(itemName, itemQuantity);
                   setItemName("");
                   handleClose();
                 }}
