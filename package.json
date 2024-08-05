@@ -16,12 +16,13 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@mui/icons-material": "^5.16.6",
     "@mui/material": "^5.16.6",
-    "firebase": "^10.12.4",
+    "firebase": "^10.12.5",
     "next": "^14.2.5",
     "react": "^18.3.1",
     "react-camera-pro": "^1.4.0",
     "react-dom": "^18.3.1",
-    "react-webcam": "^7.2.0"
+    "react-webcam": "^7.2.0",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.25.3",

@@ -37,6 +37,7 @@ import {
   getDoc,
   setDoc,
 } from "firebase/firestore";
+import CameraComponent from "@/components/CameraComponent";
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
@@ -269,8 +270,8 @@ export default function Home() {
         </Toolbar>
       </AppBar>
       <Box
-        width="100vw"
-        height="100vh"
+        width="100%"
+        height="100%"
         display="flex"
         flexDirection="column"
         justifyContent="center"
@@ -284,7 +285,7 @@ export default function Home() {
         <Box
           sx={{
             width: "100vw",
-            height: "100vh",
+            height: "50vh",
             backgroundImage: `url(https://cdn.pixabay.com/photo/2023/10/05/11/20/jar-8295653_1280.jpg)`,
             backgroundSize: "cover",
             backgroundPosition: "center",
@@ -404,7 +405,7 @@ export default function Home() {
         >
           <Box
             width="100%"
-            height="150px"
+            height="300px"
             display="flex"
             flexDirection="column"
             alignItems="center"
@@ -415,7 +416,8 @@ export default function Home() {
             <Typography
               variant="h5"
               color="#008080"
-              paddingBottom={2}
+              paddingBottom={4}
+              paddingTop={4}
               fontSize={{ xs: "1.5rem", sm: "2rem" }}
               textAlign={"center"}
             >
@@ -436,6 +438,7 @@ export default function Home() {
             >
               Add New Item
             </Button>
+            <CameraComponent />
           </Box>
           <Box width="100%" sx={{ padding: 0, margin: 0 }}>
             <Search
@@ -497,7 +500,7 @@ export default function Home() {
                       {name.charAt(0).toUpperCase() + name.slice(1)}
                     </Typography>
                   </Box>
-                  <Box flexBasis="50%">
+                  <Box flexBasis="50%" textAlign="center">
                     <Typography
                       variant="h6"
                       color="#333"
@@ -508,76 +511,72 @@ export default function Home() {
                   </Box>
 
                   <Box display="flex" flexDirection="row" gap={1} mt={1}>
-                    <Box paddingRight={3}>
-                      <Button
-                        sx={{
-                          backgroundColor: "#008080",
-                          color: "#ECDEC9",
-                          "&:hover": {
-                            backgroundColor: "#ECDEC9",
-                            color: "#008080",
-                          },
-                        }}
-                        variant="contained"
-                        onClick={() => addItem(name)}
-                      >
-                        <FontAwesomeIcon icon={faPlus} />
-                      </Button>
-                    </Box>
-                    <Box paddingRight={3}>
-                      <Button
-                        sx={{
-                          backgroundColor: "#008080",
-                          color: "#ECDEC9",
-                          "&:hover": {
-                            backgroundColor: "#ECDEC9",
-                            color: "#008080",
-                          },
-                        }}
-                        variant="contained"
-                        onClick={() => {
-                          handleEditClick(name, quantity);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faPenToSquare} />
-                      </Button>
-                    </Box>
-                    <Box paddingRight={3}>
-                      <Button
-                        sx={{
-                          backgroundColor: "#008080",
-                          color: "#ECDEC9",
-                          "&:hover": {
-                            backgroundColor: "#ECDEC9",
-                            color: "#008080",
-                          },
-                        }}
-                        variant="contained"
-                        onClick={() => {
-                          removeItemQuantity(name);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faMinus} />
-                      </Button>
-                    </Box>
-                    <Box>
-                      <Button
-                        sx={{
-                          backgroundColor: "#008080",
-                          color: "#ECDEC9",
-                          "&:hover": {
-                            backgroundColor: "#ECDEC9",
-                            color: "#008080",
-                          },
-                        }}
-                        variant="contained"
-                        onClick={() => {
-                          removeOverallItem(name);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faTrashCan} />
-                      </Button>
-                    </Box>
+                    <Button
+                      sx={{
+                        backgroundColor: "#008080",
+                        color: "#ECDEC9",
+                        "&:hover": {
+                          backgroundColor: "#ECDEC9",
+                          color: "#008080",
+                        },
+                      }}
+                      variant="contained"
+                      onClick={() => addItem(name)}
+                    >
+                      <FontAwesomeIcon icon={faPlus} />
+                    </Button>
+
+                    <Button
+                      sx={{
+                        backgroundColor: "#008080",
+                        color: "#ECDEC9",
+                        "&:hover": {
+                          backgroundColor: "#ECDEC9",
+                          color: "#008080",
+                        },
+                      }}
+                      variant="contained"
+                      onClick={() => {
+                        handleEditClick(name, quantity);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faPenToSquare} />
+                    </Button>
+
+                    <Button
+                      sx={{
+                        backgroundColor: "#008080",
+                        color: "#ECDEC9",
+                        "&:hover": {
+                          backgroundColor: "#ECDEC9",
+                          color: "#008080",
+                        },
+                      }}
+                      variant="contained"
+                      onClick={() => {
+                        removeItemQuantity(name);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faMinus} />
+                    </Button>
+
+                    <Button
+                      sx={{
+                        backgroundColor: "#008080",
+                        color: "#ECDEC9",
+                        "&:hover": {
+                          backgroundColor: "#ECDEC9",
+                          color: "#008080",
+                        },
+                      }}
+                      variant="contained"
+                      onClick={() => {
+                        removeOverallItem(name);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faTrashCan} />
+                    </Button>
+
                     <Dialog
                       open={editDialogOpen}
                       onClose={() => setEditDialogOpen(false)}
